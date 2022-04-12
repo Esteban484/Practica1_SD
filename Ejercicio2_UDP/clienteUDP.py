@@ -1,13 +1,23 @@
 import socket
+import sys
 
-msgFromClient       = "Hola Esteban desde cliente UDP"
-bytesToSend         = str.encode(msgFromClient)
-serverAddressPort   = ("172.17.36.74", 12456)
-bufferSize          = 1024
+# Create a UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+server_address = ('172.17.37.156', 1247)
+message = b'Este mensaje se envia al servidor.'
 
-UDPClientSocket.sendto(bytesToSend, serverAddressPort)
-msgFromServer = UDPClientSocket.recvfrom(bufferSize)
-msg = "Recibido {}".format(msgFromServer[0])
-print(msg)
+try:
+
+    # Send data
+    print('enviando {!r}'.format(message))
+    sent = sock.sendto(message, server_address)
+
+    # Receive response
+    print('esperando respuesta')
+    data, server = sock.recvfrom(4096)
+    print('recibido {!r}'.format(data))
+
+finally:
+    print('cerrando socket')
+    sock.close()
