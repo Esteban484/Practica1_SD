@@ -1,40 +1,23 @@
 import socket
+import sys
 
-localIP     = ""
+# Create a UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-localPort   = 12456
+# Bind the socket to the port
+server_address = ('', 1247)
+print('Levantando servidor por el {} puerto {}'.format(*server_address))
+sock.bind(server_address)
 
-bufferSize  = 1024
+while True:
+    print('\nEsperando recibir mensaje')
+    data, address = sock.recvfrom(4096)
 
- 
-msgFromServer       = "Hola Cliente bienvenido"
+    print('reenviando {} bytes a {}'.format(
+        len(data), address))
+    print(data)
 
-bytesToSend         = str.encode(msgFromServer)
-
-# Create a datagram socket
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-
-# Bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
-
-print("Esperando conexi{on")
-# Listen for incoming datagrams
-while(True):
-
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-
-    message = bytesAddressPair[0]
-
-    address = bytesAddressPair[1]
-
-    clientMsg = "Mensaje del cliente:{}".format(message)
-    clientIP  = "IP cliente:{}".format(address)
-    
-    print(clientMsg)
-    print(clientIP)
-
-   
-
-    # Sending a reply to client
-
-    UDPServerSocket.sendto(bytesToSend, address)
+    if data:
+        sent = sock.sendto(data, address)
+        print('enviando  {} bytes de vuelta {}'.format(
+            sent, address))
