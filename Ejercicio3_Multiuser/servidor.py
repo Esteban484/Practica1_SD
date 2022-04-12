@@ -1,29 +1,36 @@
 import socket
-import os
-from _thread import *
-ServerSideSocket = socket.socket()
-host = ''
-port = 2004
+import threading
+
+host = ""
+port = 7458
 ThreadCount = 0
-try:
-    ServerSideSocket.bind((host, port))
-except socket.error as e:
-    print(str(e))
-print('Socket is listening..')
-ServerSideSocket.listen(5)
-def multi_threaded_client(connection):
-    connection.send(str.encode('Server is working:'))
-    while True:
-        data = connection.recv(2048)
-        response = 'Server message: ' + data.decode('utf-8')
-        if not data:
-            break
-        connection.sendall(str.encode(response))
-    connection.close()
-while True:
-    Client, address = ServerSideSocket.accept()
-    print('Connected to: ' + address[0] + ':' + str(address[1]))
-    start_new_thread(multi_threaded_client, (Client, ))
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print ("Creando")
+sock.bind((host, port))
+sock.listen(1)
+print ("socket escuchando en este momento")
+
+
+def worker(*args):
+    conn = args[0]
+    addr = args[1]
+    try:
+        print('conexion con {}.'.format(addr))
+        conn.send("server: Conectado".encode('UTF-8'))
+        while True:
+            datos = conn.recv(4096)
+            if datos:
+                print('recibido: {}'.format(datos.decode('utf-8')))
+
+            else:
+                print("Sin conexion de cliente")
+                break
+    finally:
+        conn.close()
+
+while 1:
+    conn, addr = sock.accept()
+    threading.Thread(target=worker, args=(conn, addr)).start()
     ThreadCount += 1
-    print('Thread Number: ' + str(ThreadCount))
-ServerSideSocket.close()
+    print('Numero de hilo: ' + str(ThreadCount))
