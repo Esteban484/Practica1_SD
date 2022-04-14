@@ -1,6 +1,6 @@
 from socket import *
 
-
+#Declaracion de puertos y IP del servidor
 HOST = ''
 PORT = 1234
 BUFSIZ = 1024
@@ -17,13 +17,13 @@ while True:
     print('conectado desde:{}'.format(addr))
 
     while True:
-        data = tcpCliSock.recv(BUFSIZ).decode()# Personajes aceptados
+        data = tcpCliSock.recv(BUFSIZ).decode()# Clientes aceptados
         if data:
                 print('recibido: {}'.format(data.encode('utf-8')))
         else:
                 print("Sin conexion de cliente")
                 break
         mensaje = "Hola, te saluda el servidor"
-        tcpCliSock.send(mensaje.encode())# Enviar personaje
+        tcpCliSock.send(mensaje.encode())# Enviar mensaje hacia el cliente
     tcpCliSock.close()
-tcpSerSock.close()#Cerrar puerto
+tcpSerSock.close()
